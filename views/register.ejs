@@ -1,0 +1,29 @@
+<h1>Register</h1>
+
+<form action="/api/v1/register/" method="post" enctype="multipart/form-data">
+    <input type="text" name="name" placeholder="Enter Name" required>
+    <br><br>
+    <input type="email" name="email" placeholder="Enter Email" required>
+    <br><br>
+    <input type="file" name="image" placeholder="Enter your Image" required>
+    <br><br>
+    <input type="number" name="mobileNumber" placeholder="Enter your mobile number" required>
+    <br><br>
+    <input type="password" name="password" placeholder="Enter Password" required>
+    <br><br>
+    <span>
+        <input type="submit" value="Register"> 
+        <a href="/api/v1/register/login">
+          <button type="button">LogIn</button>
+        </a> 
+    </span>
+      
+</form>
+
+<%
+    if (typeof message !== 'undefined') {
+%> 
+    <p style="color: green;"> <%= message %> </p>
+<%
+    }
+%>
