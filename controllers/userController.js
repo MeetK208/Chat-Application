@@ -44,7 +44,7 @@ export const loginController = async (req, res) => {
     // To Store Data in Session
     req.session.user = isAvai;
 
-    res.render(process.env.BASE_URL + "register/home");
+    res.redirect(process.env.BASE_URL + "register/home");
   } catch (error) {
     console.log(error);
   }
