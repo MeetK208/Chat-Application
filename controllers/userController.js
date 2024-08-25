@@ -44,12 +44,7 @@ export const loginController = async (req, res) => {
     // To Store Data in Session
     req.session.user = isAvai;
 
-    res.render("home", {
-      name: isAvai.name,
-      logoutRoute: process.env.BASE_URL + "register/logout",
-      homeRoute: process.env.BASE_URL + "register/home",
-      success: true,
-    });
+    res.render(process.env.BASE_URL + "register/home");
   } catch (error) {
     console.log(error);
   }
@@ -69,10 +64,14 @@ export const homePageController = async (req, res) => {
     console.log("Here I am HOME");
     if (req.session.user) {
       console.log(req.session.user.name); // Should now correctly log the user's name
+      var userS = await userModel.find({
+        _id: { $nin: [req.session.user._id] },
+      });
       return res.render("home", {
         name: req.session.user.name,
         logoutRoute: process.env.BASE_URL + "register/logout",
         homeRoute: process.env.BASE_URL + "register/home",
+        users: userS,
         success: true,
       });
     } else {
