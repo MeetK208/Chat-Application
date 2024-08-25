@@ -42,7 +42,7 @@ app.use(session({ secret: process.env.SESSION_SECRET }));
 
 console.log("server.js");
 app.use("/api/v1/register/", registerRoutes);
-router.get("*", function (req, res) {
+app.get("*", function (req, res) {
   res.redirect(process.env.BASE_URL + "register/login");
 });
 
