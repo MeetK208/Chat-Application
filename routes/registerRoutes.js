@@ -11,14 +11,16 @@ import {
   loginController,
   logoutController,
 } from "../controllers/userController.js";
+import { isLogin, isLogout } from "../middlewares/auth.js";
 
 const router = express.Router();
 // routes register Post
-router.get("/", getregisterController);
+router.get("/", isLogout.getregisterController);
 router.post("/", upload.single("image"), postregisterController);
-router.get("/login/", getLoginController);
+router.get("/login/", isLogin, getLoginController);
 router.post("/login/", loginController);
 router.get("/logout/", logoutController);
+router.get("/home/");
 router.get("*", function (req, res) {
   res.redirect(process.env.BASE_URL + "register/login");
 });

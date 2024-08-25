@@ -3,7 +3,7 @@ import userModel from "../models/userModel.js";
 export const getLoginController = async (req, res) => {
   try {
     res.render("login", {
-      message: " ",
+      message: "Login Page",
       success: true,
     });
   } catch (error) {
@@ -24,8 +24,8 @@ export const loginController = async (req, res) => {
     // Find USerAvailable or not
     const isAvai = await userModel.findOne({ email });
     if (!isAvai) {
-      return res.status(500).send({
-        message: "Invalid UserName or Password",
+      return res.render("login", {
+        message: "Invalid Username or Password",
         success: false,
       });
     }
@@ -33,8 +33,8 @@ export const loginController = async (req, res) => {
     // comparePassword
     const isMatch = await isAvai.comparePassword(password);
     if (!isMatch) {
-      return res.status(500).send({
-        message: "Invalid UserName or Password",
+      return res.render("login", {
+        message: "Invalid Username or Password",
         success: false,
       });
     }
@@ -52,6 +52,7 @@ export const loginController = async (req, res) => {
     console.log(error);
   }
 };
+
 export const logoutController = async (req, res) => {
   try {
     req.session.destroy();
