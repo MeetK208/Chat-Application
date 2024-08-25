@@ -46,6 +46,8 @@ export const loginController = async (req, res) => {
 
     res.render("home", {
       name: isAvai.name,
+      logoutRoute: process.env.BASE_URL + "register/logout",
+      homeRoute: process.env.BASE_URL + "register/home",
       success: true,
     });
   } catch (error) {
@@ -69,6 +71,8 @@ export const homePageController = async (req, res) => {
       console.log(req.session.user.name); // Should now correctly log the user's name
       return res.render("home", {
         name: req.session.user.name,
+        logoutRoute: process.env.BASE_URL + "register/logout",
+        homeRoute: process.env.BASE_URL + "register/home",
         success: true,
       });
     } else {

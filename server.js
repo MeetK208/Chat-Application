@@ -42,10 +42,9 @@ app.use(session({ secret: process.env.SESSION_SECRET }));
 
 console.log("server.js");
 app.use("/api/v1/register/", registerRoutes);
-// app.get("/api/v1/user", userRoutes);
-// app.get("*", function (req, res) {
-//   res.redirect("/login");
-// });
+router.get("*", function (req, res) {
+  res.redirect(process.env.BASE_URL + "register/login");
+});
 
 // Define Port and MODE
 const PORT = process.env.PORT || 8080; //Port No from Config File
