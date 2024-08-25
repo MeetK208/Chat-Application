@@ -1,3 +1,4 @@
+
 <%- include('layouts/header.ejs', {logoutRoute: logoutRoute, homeRoute: homeRoute}); %>
 
 <!DOCTYPE html>
@@ -41,7 +42,17 @@
     }
 
     .user-list {
+      display: flex;
+      align-items: center;
       cursor: pointer;
+    }
+
+    .user-list img {
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      object-fit: cover;
+      margin-right: 10px;
     }
 
     .user-list:hover {
@@ -74,6 +85,7 @@
       <% if (users.length > 0) { %>
         <% for (let i = 0; i < users.length; i++) { %>
           <li class="list-group-item list-group-item-dark user-list">
+            <img src="<%= "http://localhost:8080/" + users[i].image %>" alt="<%= users[i].name %>">
             <%= users[i].name %>
           </li>
         <% } %>
