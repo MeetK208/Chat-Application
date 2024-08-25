@@ -15,7 +15,7 @@ import { isLogin, isLogout } from "../middlewares/auth.js";
 
 const router = express.Router();
 // routes register Post
-router.get("/", isLogout.getregisterController);
+router.get("/", isLogout, getregisterController);
 router.post("/", upload.single("image"), postregisterController);
 router.get("/login/", isLogin, getLoginController);
 router.post("/login/", loginController);
