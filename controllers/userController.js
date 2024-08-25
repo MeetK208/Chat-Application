@@ -42,7 +42,7 @@ export const loginController = async (req, res) => {
     isAvai.password = undefined;
     // const token = isAvai.createJWT();
     // To Store Data in Session
-    req.session.user = isMatch;
+    req.session.user = isAvai;
 
     res.render("home", {
       name: isAvai.name,
@@ -59,5 +59,23 @@ export const logoutController = async (req, res) => {
     res.redirect(process.env.BASE_URL + "register/login");
   } catch (error) {
     console.log(error);
+  }
+};
+
+export const homePageController = async (req, res) => {
+  try {
+    console.log("Here I am HOME");
+    if (req.session.user) {
+      console.log(req.session.user.name); // Should now correctly log the user's name
+      return res.render("home", {
+        name: req.session.user.name,
+        success: true,
+      });
+    } else {
+      return res.redirect(process.env.BASE_URL + "register/login");
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal Server Error");
   }
 };
