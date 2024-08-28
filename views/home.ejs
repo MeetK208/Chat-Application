@@ -107,11 +107,36 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script>
-  $(document).ready(function() {
-    $('.user-list').click(function() {
-      $('.chat-section').toggle(); // Toggle the chat section's visibility
-    });
+
+  var 
+  var socket = io("http://localhost:3000/user-namespace");
+
+  socket.on('connect', function() { 
+    console.log('Connected to /user-namespace');
   });
+
+  socket.on('disconnect', function() {
+    console.log('Disconnected from /user-namespace');
+  });
+
+  // Listen for incoming messages
+  socket.on('message', function(data) {
+    $('#chat-container').append('<div>' + data + '</div>');
+  });
+
+  // Send message
+  $('#chat-form').submit(function(e) {
+    e.preventDefault();
+    var message = $('#message').val();
+    socket.emit('chatMessage', message);
+    $('#message').val(''); // Clear the input field
+  });
+
+  // Toggle chat section
+  $('.user-list').click(function() {
+    $('.chat-section').toggle(); 
+  });
+
 </script>
 
 <%- include('layouts/footer.ejs'); %>

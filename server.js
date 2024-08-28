@@ -7,7 +7,6 @@ import cors from "cors";
 import morgan from "morgan";
 import path from "path";
 import bodyParser from "body-parser"; // Optional, if using older versions of Express
-
 // Fun Import
 import { mongoConnect } from "./utils/db-connect.js";
 import { upload } from "./utils/storeImage.js"; // Import the upload function
@@ -35,13 +34,27 @@ app.use(express.static("./public"));
 // session
 app.use(session({ secret: process.env.SESSION_SECRET }));
 
-// Get API
-// app.get("/", (req, res) => {
-//   res.render("register");
-// });
-
 console.log("server.js");
 app.use("/api/v1/register/", registerRoutes);
+
+import { Server } from "socket.io";
+// const { Server } = require("socket.io");
+
+const io = new Server({ cors: "*" });
+
+const newNsv = io.of("/user-namespace");
+
+newNsv.on("connection", async (socket) => {
+  // ...
+  console.log("new user connected !!!");
+
+  socket.on("disconnect", () => {
+    console.log(" Disconnected");
+  });
+});
+
+io.listen(3000);
+
 app.get("*", function (req, res) {
   res.redirect(process.env.BASE_URL + "register/login");
 });
