@@ -7,12 +7,14 @@ import cors from "cors";
 import morgan from "morgan";
 import path from "path";
 import bodyParser from "body-parser"; // Optional, if using older versions of Express
+import { Server } from "socket.io";
+
 // Fun Import
 import { mongoConnect } from "./utils/db-connect.js";
 import { upload } from "./utils/storeImage.js"; // Import the upload function
 import { register } from "module";
+import userModel from "./models/userModel.js";
 import registerRoutes from "./routes/registerRoutes.js";
-// import userRoutes from "./routes/userRoutes.js";
 
 dotenv.config();
 mongoConnect();
@@ -37,7 +39,6 @@ app.use(session({ secret: process.env.SESSION_SECRET }));
 console.log("server.js");
 app.use("/api/v1/register/", registerRoutes);
 
-import { Server } from "socket.io";
 // const { Server } = require("socket.io");
 
 const io = new Server({ cors: "*" });
@@ -48,8 +49,31 @@ newNsv.on("connection", async (socket) => {
   // ...
   console.log("new user connected !!!");
 
-  socket.on("disconnect", () => {
+  // Set User Online
+  const userId = socket.handshake.auth.token;
+  console.log(userId);
+  await userModel.findByIdAndUpdate(
+    userId,
+    {
+      $set: {
+        is_online: "1",
+      },
+    },
+    { new: true }
+  );
+
+  socket.on("disconnect", async () => {
     console.log(" Disconnected");
+    // Set User Offline
+    await userModel.findByIdAndUpdate(
+      userId,
+      {
+        $set: {
+          is_online: "0",
+        },
+      },
+      { new: true }
+    );
   });
 });
 

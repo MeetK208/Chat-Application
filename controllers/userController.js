@@ -68,7 +68,7 @@ export const homePageController = async (req, res) => {
         _id: { $nin: [req.session.user._id] },
       });
       return res.render("home", {
-        name: req.session.user.name,
+        currentUser: req.session.user,
         logoutRoute: process.env.BASE_URL + "register/logout",
         homeRoute: process.env.BASE_URL + "register/home",
         users: userS,
