@@ -86,12 +86,10 @@
             <li class="list-group-item list-group-item-dark user-list">
               <div style="position: relative;">
                 <img src="<%= "http://localhost:8080/" + users[i].image %>" alt="<%= users[i].name %>" style="width: 40px; height: 40px;">
-                <% if (users[i].is_online === "1") { %>
-                  <!-- Green Tick Icon -->
-                  <span id="<%= users[i]._id %>-status" class="status-indicator online-status" 
-                        style="position: absolute; bottom: 0; right: 0; width: 10px; height: 10px; border-radius: 50%; border: 2px solid white;">
-                  </span>
-                <% } %>
+                <span id="<%= users[i]._id %>-status" 
+                      class="<%= users[i].is_online === "1" ? 'online-status' : 'offline-status' %>" 
+                      style="position: absolute; bottom: 0; right: 0; width: 10px; height: 10px; border-radius: 50%; border: 2px solid white;">
+                </span>
               </div>
               <%= users[i].name %>
             </li>
@@ -112,16 +110,16 @@
     </div>
   </div>
   
-  <!-- Style for Online Status -->
+  <!-- Style for Online/Offline Status -->
   <style>
-    .status-indicator {
-      display: none; /* Hidden by default */
-    }
     .online-status {
       background-color: green;
-      display: inline-block; /* Only displayed when user is online */
     }
-  </style>  
+    .offline-status {
+      background-color: red;
+    }
+  </style>
+    
   
   
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
@@ -163,15 +161,14 @@
   });
 
   socket.on('sendOnlineBroadcast', function(data) {
-    const statusElement = $('#' + data.user_id + '-status');
-    statusElement.show().removeClass('offline-status').addClass('online-status');
+    $('#' + data.user_id + '-status').removeClass('offline-status');
+    $('#' + data.user_id + '-status').addClass('online-status');
   });
 
   socket.on('sendOfflineBroadcast', function(data) {
-    const statusElement = $('#' + data.user_id + '-status');
-    statusElement.hide(); // Hide the status indicator when offline
+    $('#' + data.user_id + '-status').removeClass('online-status');
+    $('#' + data.user_id + '-status').addClass('offline-status');
   });
-
   
 
 </script>
