@@ -62,6 +62,9 @@ newNsv.on("connection", async (socket) => {
     { new: true }
   );
 
+  // BroadCast Online Offline to All so that they get to know that user is currently is offline
+  socket.broadcast.emit("sendOnlineBroadcast", { user_id: userId });
+
   socket.on("disconnect", async () => {
     console.log(" Disconnected");
     // Set User Offline
@@ -74,6 +77,8 @@ newNsv.on("connection", async (socket) => {
       },
       { new: true }
     );
+    // BroadCast for offline user
+    socket.broadcast.emit("sendOfflineBroadcast", { user_id: userId });
   });
 });
 
