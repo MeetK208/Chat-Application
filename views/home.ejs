@@ -8,7 +8,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chat Application</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <style>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script> -->
+  <!-- integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script> -->
+<style>
     /* General Styling */
     body {
       font-family: 'Poppins', sans-serif;
@@ -73,17 +78,35 @@
       background-color: #0056b3;
       border-color: #004085;
     }
+
+    .current-user-chat{
+      text-align: right;
+      margin: 10px;
+      color: black;
+    }
+    
+    .distance-user-chat{
+      text-align: left;
+      margin: 10px;
+      color: red;
+    }
+    
+    .online-status {
+      background-color: green;
+    }
+    .offline-status {
+      background-color: red;
+    }
   </style>
 </head>
 <body>
   <h2 class="mb-4"> Welcome, <%= currentUser.name %>! </h2>
-
   <div class="row">
     <div class="col-md-3">
       <ul class="list-group">
         <% if (users.length > 0) { %>
           <% for (let i = 0; i < users.length; i++) { %>
-            <li class="list-group-item list-group-item-dark user-list">
+            <li class="list-group-item list-group-item-dark user-list" data-id = "<%= users[i]._id %>">
               <div style="position: relative;">
                 <img src="<%= "http://localhost:8080/" + users[i].image %>" alt="<%= users[i].name %>" style="width: 40px; height: 40px;">
                 <span id="<%= users[i]._id %>-status" 
@@ -101,8 +124,15 @@
     <div class="col-md-9">
       <h3 class="start-head"> Click to Start The Chat</h3>
       <div class="chat-section" style="display:none;">
-        <div id="chat-container"></div>
-        <form action="" id="chat-form">
+        <div id="chat-container">
+
+          <div>
+           <div>  <h5 class="current-user-chat"> Hiii </h5> </div>
+           <div>  <h5 class="distance-user-chat"> Hiii </h5> </div>
+          </div>
+
+        </div>
+        <form id="chat-form">
           <input type="text" name="message" placeholder="Enter message" id="message" class="form-control" required>
           <input type="submit" value="Send Message" class="btn btn-primary mt-2">
         </form>
@@ -110,23 +140,13 @@
     </div>
   </div>
   
-  <!-- Style for Online/Offline Status -->
-  <style>
-    .online-status {
-      background-color: green;
-    }
-    .offline-status {
-      background-color: red;
-    }
-  </style>
-    
-  
-  
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<script>
-  console.log('<%= JSON.stringify(currentUser.name) %>');
 
-  var sender_id =  "<%= currentUser._id %>"; 
+
+<script>
+
+  const sender_id =  "<%= currentUser._id %>";
+  var receiver_id; 
+  
   var socket = io("http://localhost:3000/user-namespace",{
     auth: {
       token: sender_id,
@@ -134,30 +154,12 @@
     }
   });
 
-  socket.on('connect', function() { 
-    console.log('Connected to /user-namespace');
-  });
-
-  socket.on('disconnect', function() {
-    console.log('Disconnected from /user-namespace');
-  });
-
-  // Listen for incoming messages
-  socket.on('message', function(data) {
-    $('#chat-container').append('<div>' + data + '</div>');
-  });
-
-  // Send message
-  $('#chat-form').submit(function(e) {
-    e.preventDefault();
-    var message = $('#message').val();
-    socket.emit('chatMessage', message);
-    $('#message').val(''); // Clear the input field
-  });
-
   // Toggle chat section
   $('.user-list').click(function() {
     $('.chat-section').toggle(); 
+    var id = $(this).attr('data-id'); // This sets the receiver_id correctly when a user is clicked
+    receiver_id = id;
+    console.log("Receiver ID Set:", receiver_id);
   });
 
   socket.on('sendOnlineBroadcast', function(data) {
@@ -169,7 +171,56 @@
     $('#' + data.user_id + '-status').removeClass('online-status');
     $('#' + data.user_id + '-status').addClass('offline-status');
   });
-  
+// Chat Save
+
+  // Chat Save
+  $(document).ready(function() {
+    $('#chat-form').submit(function(event) {
+      event.preventDefault();
+      const message = $('#message').val();
+
+      if (sender_id && receiver_id && message) {
+        console.log({sender_id, receiver_id, message});
+
+        fetch('/api/v1/chat/save-chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            sender_id: sender_id,
+            receiver_id: receiver_id,
+            message: message
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            console.log(data);
+            $('#message').val('');
+
+            // Append the message to the chat container
+            let chat = data.data.message;
+            let chatClass = (data.data.sender_id === sender_id) ? 'current-user-chat' : 'other-user-chat';
+            let html = `
+              <div>
+                <h5 class="${chatClass}">${chat}</h5>
+              </div>
+            `;
+            $('#chat-container').append(html);
+            $('#chat-container').scrollTop($('#chat-container')[0].scrollHeight);
+          } else {
+            console.log("Failed to save chat:", data.error);
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+      } else {
+        console.log("Sender or Receiver ID is missing, or message is empty.");
+      }
+    });
+  });
 
 </script>
 

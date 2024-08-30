@@ -15,6 +15,7 @@ import { upload } from "./utils/storeImage.js"; // Import the upload function
 import { register } from "module";
 import userModel from "./models/userModel.js";
 import registerRoutes from "./routes/registerRoutes.js";
+import chatRoutes from "./routes/chatRoutes.js";
 
 dotenv.config();
 mongoConnect();
@@ -38,7 +39,7 @@ app.use(session({ secret: process.env.SESSION_SECRET }));
 
 console.log("server.js");
 app.use("/api/v1/register/", registerRoutes);
-
+app.use("/api/v1/chat/", chatRoutes);
 // const { Server } = require("socket.io");
 
 const io = new Server({ cors: "*" });
