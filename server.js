@@ -13,9 +13,10 @@ import { Server } from "socket.io";
 import { mongoConnect } from "./utils/db-connect.js";
 import { upload } from "./utils/storeImage.js"; // Import the upload function
 import { register } from "module";
-import userModel from "./models/userModel.js";
+import chatModel from "./models/chatModel.js";
 import registerRoutes from "./routes/registerRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
+import { initSocket } from "./utils/socket.js"; // Adjust the import path as needed
 
 dotenv.config();
 mongoConnect();
@@ -27,64 +28,25 @@ app.use(cors());
 app.use(morgan("dev"));
 app.use(express.urlencoded({ extended: true })); // For parsing application/x-www-form-urlencoded
 
-// Set Template Engine to Render HTML
-app.set("view engine", "ejs");
+app.set("view engine", "ejs"); // Set Template Engine to Render HTML
 app.set("views", "./views");
 
-// To Store Static Data
-app.use(express.static("./public"));
+app.use(express.static("./public")); // To Store Static Data
+app.use(session({ secret: process.env.SESSION_SECRET })); // session
 
-// session
-app.use(session({ secret: process.env.SESSION_SECRET }));
-
-console.log("server.js");
 app.use("/api/v1/register/", registerRoutes);
 app.use("/api/v1/chat/", chatRoutes);
-// const { Server } = require("socket.io");
 
-const io = new Server({ cors: "*" });
+import http from "http";
+const server = http.createServer(app);
 
-const newNsv = io.of("/user-namespace");
-
-newNsv.on("connection", async (socket) => {
-  // ...
-  console.log("new user connected !!!");
-
-  // Set User Online
-  const userId = socket.handshake.auth.token;
-  console.log(userId);
-  await userModel.findByIdAndUpdate(
-    userId,
-    {
-      $set: {
-        is_online: "1",
-      },
-    },
-    { new: true }
-  );
-
-  // BroadCast Online Offline to All so that they get to know that user is currently is offline
-  socket.broadcast.emit("sendOnlineBroadcast", { user_id: userId });
-
-  socket.on("disconnect", async () => {
-    console.log(" Disconnected");
-    // Set User Offline
-    await userModel.findByIdAndUpdate(
-      userId,
-      {
-        $set: {
-          is_online: "0",
-        },
-      },
-      { new: true }
-    );
-    // BroadCast for offline user
-    socket.broadcast.emit("sendOfflineBroadcast", { user_id: userId });
-  });
+// Initialize Socket.IO
+initSocket(server);
+server.listen(3000, () => {
+  console.log("Server is running on port 3000");
 });
 
-io.listen(3000);
-
+// Unwanted Routes
 app.get("*", function (req, res) {
   res.redirect(process.env.BASE_URL + "register/login");
 });

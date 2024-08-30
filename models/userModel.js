@@ -28,9 +28,17 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "0",
     },
+    lastseen: {
+      type: Date,
+      default: Date.now,
+    },
     createdAt: {
       type: Date,
       default: Date.now,
+    },
+    bio: {
+      type: String,
+      default: "",
     },
   },
   { timestamps: true }

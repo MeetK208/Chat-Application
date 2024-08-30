@@ -27,7 +27,7 @@ export const postregisterController = async (req, res) => {
 
     const existingUser = await userModel.findOne({ email });
     if (existingUser) {
-      res.status(500).send({
+      return res.status(500).send({
         message: "User Already Available!! Please Login",
         success: false,
       });

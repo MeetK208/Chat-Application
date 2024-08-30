@@ -82,3 +82,25 @@ export const homePageController = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
+
+export const editUserProfile = async (req, res) => {
+  const { name, password } = req.body;
+  const { file } = req;
+
+  await userModel.findByIdAndUpdate(
+    userId,
+    {
+      $set: {
+        is_online: "0",
+        lastseen: Date.now(),
+      },
+    },
+    { new: true }
+  );
+  if (!name || !file || !email || !password || !mobileNumber) {
+    return res.status(500).send({
+      message: "Please Provide Required Feild",
+      success: false,
+    });
+  }
+};
