@@ -16,7 +16,7 @@ export const isLogout = async (req, res, next) => {
   try {
     if (req.session.user) {
       console.log("User is already Authenticated");
-      return res.redirect(process.env.BASE_URL + "register/home/");
+      return res.redirect(process.env.BASE_URL + "register/home");
     } else {
       next();
     }
@@ -30,7 +30,7 @@ export const isOnWrongURL = async (req, res, next) => {
   try {
     if (req.session.user) {
       console.log("User is Authenticated");
-      return res.redirect(process.env.BASE_URL + "register/home/");
+      return res.redirect(process.env.BASE_URL + "register/home");
     } else {
       return res.redirect(process.env.BASE_URL + "register/login");
     }

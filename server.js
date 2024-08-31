@@ -7,13 +7,16 @@ import cors from "cors";
 import morgan from "morgan";
 import path from "path";
 import bodyParser from "body-parser"; // Optional, if using older versions of Express
+import { Server } from "socket.io";
 
 // Fun Import
 import { mongoConnect } from "./utils/db-connect.js";
 import { upload } from "./utils/storeImage.js"; // Import the upload function
 import { register } from "module";
+import chatModel from "./models/chatModel.js";
 import registerRoutes from "./routes/registerRoutes.js";
-// import userRoutes from "./routes/userRoutes.js";
+import chatRoutes from "./routes/chatRoutes.js";
+import { initSocket } from "./utils/socket.js"; // Adjust the import path as needed
 
 dotenv.config();
 mongoConnect();
@@ -25,23 +28,25 @@ app.use(cors());
 app.use(morgan("dev"));
 app.use(express.urlencoded({ extended: true })); // For parsing application/x-www-form-urlencoded
 
-// Set Template Engine to Render HTML
-app.set("view engine", "ejs");
+app.set("view engine", "ejs"); // Set Template Engine to Render HTML
 app.set("views", "./views");
 
-// To Store Static Data
-app.use(express.static("./public"));
+app.use(express.static("./public")); // To Store Static Data
+app.use(session({ secret: process.env.SESSION_SECRET })); // session
 
-// session
-app.use(session({ secret: process.env.SESSION_SECRET }));
-
-// Get API
-// app.get("/", (req, res) => {
-//   res.render("register");
-// });
-
-console.log("server.js");
 app.use("/api/v1/register/", registerRoutes);
+app.use("/api/v1/chat/", chatRoutes);
+
+import http from "http";
+const server = http.createServer(app);
+
+// Initialize Socket.IO
+initSocket(server);
+server.listen(3000, () => {
+  console.log("Server is running on port 3000");
+});
+
+// Unwanted Routes
 app.get("*", function (req, res) {
   res.redirect(process.env.BASE_URL + "register/login");
 });
