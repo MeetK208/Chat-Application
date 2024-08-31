@@ -1,3 +1,5 @@
+<%- include('layouts/header.ejs', {logoutRoute: logoutRoute, homeRoute: homeRoute}); %>
+
 <h1>Login</h1>
 
 <% if (typeof message !== 'undefined') { %>
@@ -15,3 +17,9 @@
     </a>
   </SPAN>
 </form>
+
+
+<%- include('layouts/footer.ejs'); %>
+</body>
+
+</html>

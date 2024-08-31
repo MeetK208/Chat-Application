@@ -1,3 +1,5 @@
+<%- include('layouts/header.ejs', {logoutRoute: logoutRoute, homeRoute: homeRoute}); %>
+
 <h1>Register</h1>
 
 <form action="/api/v1/register/" method="post" enctype="multipart/form-data">
@@ -27,3 +29,9 @@
 <%
     }
 %>
+
+
+<%- include('layouts/footer.ejs'); %>
+</body>
+
+</html>

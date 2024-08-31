@@ -4,7 +4,11 @@ import bcrypt from "bcrypt";
 export const getregisterController = async (req, res) => {
   try {
     console.log(" Register Page is Showing ");
-    res.render("register");
+    res.render("register", {
+      logoutRoute: process.env.BASE_URL + "register/logout",
+      homeRoute: process.env.BASE_URL + "register/home",
+      baseurl: process.env.BASE_URL,
+    });
   } catch (error) {
     console.log(error);
     res.status(500).send({
@@ -55,6 +59,9 @@ export const postregisterController = async (req, res) => {
     return res.render("login", {
       message: " ",
       success: true,
+      logoutRoute: process.env.BASE_URL + "register/logout",
+      homeRoute: process.env.BASE_URL + "register/home",
+      baseurl: process.env.BASE_URL,
     });
   } catch (error) {
     console.log(error);

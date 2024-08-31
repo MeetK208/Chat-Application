@@ -1,10 +1,14 @@
 import userModel from "../models/userModel.js";
+import fs from "fs";
 
 export const getLoginController = async (req, res) => {
   try {
     res.render("login", {
       message: "Login Page",
       success: true,
+      logoutRoute: process.env.BASE_URL + "register/logout",
+      homeRoute: process.env.BASE_URL + "register/home",
+      baseurl: process.env.BASE_URL,
     });
   } catch (error) {
     console.log(error);
@@ -27,6 +31,9 @@ export const loginController = async (req, res) => {
       return res.render("login", {
         message: "Invalid Username or Password",
         success: false,
+        logoutRoute: process.env.BASE_URL + "register/logout",
+        homeRoute: process.env.BASE_URL + "register/home",
+        baseurl: process.env.BASE_URL,
       });
     }
 
@@ -36,6 +43,9 @@ export const loginController = async (req, res) => {
       return res.render("login", {
         message: "Invalid Username or Password",
         success: false,
+        logoutRoute: process.env.BASE_URL + "register/logout",
+        homeRoute: process.env.BASE_URL + "register/home",
+        baseurl: process.env.BASE_URL,
       });
     }
 
@@ -84,23 +94,71 @@ export const homePageController = async (req, res) => {
 };
 
 export const editUserProfile = async (req, res) => {
-  const { name, password } = req.body;
-  const { file } = req;
+  console.log("Request body: ", req.body);
+  console.log("Uploaded file: ", req.file);
 
-  await userModel.findByIdAndUpdate(
-    userId,
-    {
-      $set: {
-        is_online: "0",
-        lastseen: Date.now(),
-      },
-    },
-    { new: true }
-  );
-  if (!name || !file || !email || !password || !mobileNumber) {
-    return res.status(500).send({
-      message: "Please Provide Required Feild",
-      success: false,
-    });
+  const { name, mobileNumber } = req.body;
+  const { file } = req;
+  const userId = req.session.user._id;
+
+  // Initialize updateValues object
+  const updateValues = {};
+
+  if (name) {
+    updateValues.name = name;
   }
+
+  if (mobileNumber) {
+    updateValues.mobileNumber = mobileNumber;
+  }
+
+  if (file) {
+    updateValues.image = "images/" + file.filename;
+    console.log(" Old " + req.session.user.image);
+    console.log("New" + updateValues.image);
+    deleteFile(req.session.user.image);
+  }
+
+  try {
+    const updatedUser = await userModel.findByIdAndUpdate(
+      userId,
+      updateValues,
+      { new: true }
+    );
+    console.log("Updated user: ", updatedUser);
+    req.session.user = updatedUser; // re update session with new value
+    res.redirect(process.env.BASE_URL + "register/home");
+  } catch (error) {
+    console.error("Error updating user profile: ", error);
+    res.status(500).send("Error updating profile");
+  }
+};
+
+export const geteditUserProfile = async (req, res) => {
+  try {
+    res.render("edit", {
+      message: "Edit Page",
+      success: true,
+      currentUser: req.session.user,
+      logoutRoute: process.env.BASE_URL + "register/logout",
+      homeRoute: process.env.BASE_URL + "register/home",
+      baseurl: process.env.BASE_URL,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const deleteFile = (filename) => {
+  var filePath = "public\\"; // Replace with the actual path to your file
+  console.log(filename);
+  filePath += filename;
+  fs.unlink(filePath, (err) => {
+    if (err) {
+      console.error(`Error removing file: ${err}`);
+      return;
+    }
+
+    console.log(`File ${filePath} has been successfully removed.`);
+  });
 };

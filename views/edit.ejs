@@ -1,0 +1,45 @@
+<%- include('layouts/header.ejs', {logoutRoute: logoutRoute, homeRoute: homeRoute}); %>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
+<h1>Welcome, <%= currentUser.name %>!</h1>
+<h2> Edit Page</h2>
+
+<form action="/api/v1/register/edit-profile/" method="post" enctype="multipart/form-data" id="edit-form">
+  <input type="text" name="name" placeholder="Enter Name">
+  <br><br>
+  <input type="file" name="image" placeholder="Enter your Image">
+  <br><br>
+  <input type="number" name="mobileNumber" placeholder="Enter your mobile number">
+  <br><br>
+  <span>
+    <input type="submit" value="Submit">
+    <a href="/api/v1/register/home">
+      <button type="button">Home</button>
+    </a>
+  </span>
+
+</form>
+
+<script>
+  $("#edit-form").submit(function(event) {
+
+    var socket = io("http://localhost:3000/user-namespace", {
+      auth: {
+        token: sender_id,
+        emailID: "<%= currentUser.email %>",
+      },
+    });
+
+    socket.on("updateUserProfile", function(data) {
+      $("#" + data.user_id + "-status").removeClass("offline-status");
+      $("#" + data.user_id + "-status").addClass("online-status");
+    });
+
+  });
+</script>
+
+<%- include('layouts/footer.ejs'); %>
+</body>
+
+</html>
