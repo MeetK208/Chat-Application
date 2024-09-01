@@ -424,7 +424,7 @@
         <% if (users.length> 0) { %> <% for (let i=0; i < users.length; i++) { %>
         <li class="list-group-item list-group-item-dark user-list" data-id="<%= users[i]._id %>">
           <div style="position: relative">
-            <img src="<%= " http://localhost:8080/" + users[i].image %>" alt="<%= users[i].name %>" style="width: 40px; height: 40px;">
+            <img id="profile-image-<%= users[i]._id %>" src="<%= " http://localhost:8080/" + users[i].image %>" alt="<%= users[i].name %>-<%= users[i]._id %>" style="width: 40px; height: 40px;">
             <span id="<%= users[i]._id %>-status" class="<%= users[i].is_online === '1' ? 'online-status' : 'offline-status' %>" style="
                   position: absolute;
                   bottom: 0;
@@ -471,46 +471,15 @@
   </script>
 
   <script src="/js/chatSaveLoad.js"></script>
-  <!-- Dark Theme Toggle & Hover Effect -->
+  <script src="/js/getLastSeen.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const getLastSeen = (user) => {
-        if (user.is_online === "1") return ""; // User is online, show 'Online'
+    socket.on("updateUserProfileUsingModel", (data) => {
+      console.log("Changing");
 
-        const now = new Date();
-        const lastSeenDate = new Date(user.lastseen);
-
-        if (now.toDateString() === lastSeenDate.toDateString()) {
-          // If the last seen date is today, return only the time
-          return "last seen at " + lastSeenDate.toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit'
-          });
-        } else {
-          // If it's a different day, return date and time
-          return "last seen at " + lastSeenDate.toLocaleString([], {
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-          });
-        }
-      };
-
-      // Ensure that users are defined and is an array
-      if (Array.isArray(users)) {
-        users.forEach(user => {
-          const lastSeenElement = document.getElementById(`last-seen-${user._id}`);
-          if (lastSeenElement) {
-            lastSeenElement.textContent = getLastSeen(user);
-          }
-        });
-      } else {
-        console.error("Users data is not an array:", users);
-      }
-    });
+      var img = document.getElementById(`profile-image-${data.userId}`);
+      img.src = data.image;
+    })
   </script>
-
 
   <script src="/js/Theme&HoverChat.js"></script>
   <script src="/js/toggleChat.js"></script>

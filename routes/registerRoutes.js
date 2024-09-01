@@ -4,6 +4,9 @@ import bcrypt from "bcryptjs";
 import {
   getregisterController,
   postregisterController,
+  verifyEmail,
+  getVerifyController,
+  VerifyController,
 } from "../controllers/registerController.js";
 import { upload } from "../utils/storeImage.js";
 import {
@@ -29,7 +32,10 @@ router.get("/home/", isLogin, homePageController);
 
 router.get("/edit-profile/", isLogin, geteditUserProfile);
 router.post("/edit-profile/", isLogin, upload.single("image"), editUserProfile);
+router.post("/verify-email", isLogout, verifyEmail);
 
+router.get("/verify-user", isLogout, getVerifyController);
+router.post("/verify-user", isLogout, VerifyController);
 router.get("*", isOnWrongURL, function (req, res) {
   res.redirect(process.env.BASE_URL + "register/login");
 });

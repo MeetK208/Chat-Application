@@ -64,5 +64,13 @@ export const initSocket = (server) => {
       });
       socket.emit("loadCHats", { chats: userChat });
     });
+
+    socket.on("updateUserProfile", async (data) => {
+      console.log("To get Updated User ID");
+      const newUserData = await userModel.findById(userId);
+      socket.emit("updateUserProfileUsingModel", {
+        updatedUserData: newUserData,
+      });
+    });
   });
 };

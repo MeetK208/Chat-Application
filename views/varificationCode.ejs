@@ -1,0 +1,30 @@
+<%- include('layouts/header.ejs', {logoutRoute: logoutRoute, homeRoute: homeRoute}); %>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
+<h2> Varification Page</h2>
+
+<% if (typeof message !== 'undefined') { %>
+<h4 style="color: red;"><%= message %></h4>
+<% } %>
+
+<h3> Please Check E-mail For varification Code</h3>
+
+<form action="/api/v1/register/verify-user" method="post" id="edit-form">
+  <input type="text" name="email" placeholder="Enter Your Registered E-mail" required>
+  <br><br>
+  <input type="text" name="code" placeholder="Enter 6 Digit Code" required>
+  <br><br>
+  <span>
+    <input type="submit" value="Submit">
+    <a href="/api/v1/register/login">
+      <button type="button"> Log-in </button>
+    </a>
+  </span>
+</form>
+
+
+<%- include('layouts/footer.ejs'); %>
+</body>
+
+</html>

@@ -39,9 +39,10 @@ export const loginController = async (req, res) => {
 
     // comparePassword
     const isMatch = await isAvai.comparePassword(password);
-    if (!isMatch) {
+    const isVarified = isAvai.isVerified;
+    if (!isMatch || !isVarified) {
       return res.render("login", {
-        message: "Invalid Username or Password",
+        message: "Your Profile is Not Verified! !! Please Verify",
         success: false,
         logoutRoute: process.env.BASE_URL + "register/logout",
         homeRoute: process.env.BASE_URL + "register/home",
@@ -50,7 +51,6 @@ export const loginController = async (req, res) => {
     }
 
     isAvai.password = undefined;
-    // const token = isAvai.createJWT();
     // To Store Data in Session
     req.session.user = isAvai;
 
@@ -76,6 +76,7 @@ export const homePageController = async (req, res) => {
       console.log(req.session.user.name); // Should now correctly log the user's name
       var userS = await userModel.find({
         _id: { $nin: [req.session.user._id] },
+        isVerified: true,
       });
       return res.render("home", {
         currentUser: req.session.user,

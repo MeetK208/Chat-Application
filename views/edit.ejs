@@ -24,16 +24,18 @@
 <script>
   $("#edit-form").submit(function(event) {
 
+    var userId = "<%= currentUser._id %>";
+    var email = "<%= currentUser.email %>";
     var socket = io("http://localhost:3000/user-namespace", {
       auth: {
-        token: sender_id,
+        token: "<%= currentUser._id %>",
         emailID: "<%= currentUser.email %>",
       },
     });
 
-    socket.on("updateUserProfile", function(data) {
-      $("#" + data.user_id + "-status").removeClass("offline-status");
-      $("#" + data.user_id + "-status").addClass("online-status");
+    socket.emmit("updateUserProfile", {
+      userId: userId,
+      email: email,
     });
 
   });
